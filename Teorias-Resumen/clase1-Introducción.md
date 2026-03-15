@@ -109,9 +109,12 @@ Por ahora, se llamará "Proceso" a un programa **secuencial**. Un proceso es un 
 
 **Un programa concurrente va a estar formado por varios procesos**. Cada uno de los procesos va a resolver un único problema, no problemas distintos. Yo tengo un único programa que es para resolver un único problema, pero ese programa va a estar compuesto por varios procesos. Esos procesos que forman parte del programa van a tener distintos comportamientos. Pueden ser procesos independientes ya que podrían solucionar su parte sin interactuar con el resto, pero los procesos pueden cooperar o competir entre ellos (estos son dos comportamientos diferentes que a su vez pueden darse al mismo tiempo). 
 
-**Los procesos pueden ser independientes entre ellos, cooperar o competir.**
+**Los procesos pueden ser independientes entre ellos, cooperar o competir:**
+
 **Independientes** porque cada uno tiene la capacidad de resolver su parte sin interactuar con el resto. Estos procesos son relativamente raros y poco interesantes.
+
 **Cooperar** porque cada uno ejecuta o realiza una parte de la tarea y después de alguna manera todas esas partecitas tienen que integrarse de alguna manera entre ellas para obtener el resultado final. Este caso no es sencillo ya que hay varias decisiones que hay que tomar. Los procesos deben sincronizarse para poder cooperar correctamente.
+
 **Compiten** porque entre ellos "pelean" por utilizar un recurso compartido (por ejemplo, en el sistema de ventas de pasajes de avion, los usuarios "compiten" por acceder a comprar un pasaje). Este tipo de proceso es típico en Sistemas Operativos y Redes, debido a recursos compartidos. Estos problemas no son tan sencillos de resolver, ya que hay varios problemas que se pueden dar: **Deadlock** (donde ninguno de los procesos va a poder continuar trabajando porque está esperando que el otro proceso libere un cierto recurso compartido, que no lo va a poder liberar porque estará esperando que el primer proceso libere otro recurso, el cual tampoco va a ser liberado. Esto es el "Abrazo Mortal" ya que ninguno de los procesos va a poder continuar su ejecución), Inanición (algunos de los procesos nunca logra acceder al recurso compartido ya que hay otro que le gana. Mientras mas procesos compiten por el recurso, más posibilidades de inanición existen)
 
 Hay momentos donde los procesos donde los procesos serán independientes, luego cooperarán y luego competirán (no es que un proceso nace siendo independiente y muere así, sino que puede variar).

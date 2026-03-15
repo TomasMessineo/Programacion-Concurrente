@@ -1,38 +1,61 @@
-# Teoría de Programación Concurrente | Clase 1 | Introducción
+# Teoría de Programación Concurrente | Clase 2 | Conceptos básicos de concurrencia
 
 ## Comunicación entre procesos
 
-Una de las características que tienen los programas concurrentes es que en algún momento un proceso de este programa puede necesitar un dato que fue generado o que tiene de algúna manera otro de los procesos. Necesita conocerlo para poder avanzar en la solución del problema que se quiere resolver con el programa.
-Ante esto surge el concepto de la **comunicación entre procesos concurrentes**. Esta indica el modo en el que se organizan y transmiten los datos (la información) entre esas tareas concurrentes. Esa organización que uno va a utilizar requiere indicar ciertos protocolos que puedan controlar como progresa esa comunicación y que la misma haya sido realizada de forma correcta.
+Una de las características de los programas concurrentes es que en algún momento un proceso puede necesitar un dato generado por otro proceso para poder avanzar en la solución del problema. Ante esto surge el concepto de **comunicación entre procesos concurrentes**: el modo en que se organizan y transmiten los datos entre tareas concurrentes, mediante protocolos que controlan cómo progresa esa comunicación y verifican que se haya realizado correctamente.
 
-### Conceptos básicos:
+### Tipos de comunicación
 
-**La comunicación entre procesos concurrentes se puede identificar en dos grandes grupos:**
-* **Comunicación por Memoria Compartida:** Se necesita algún lugar de memoria donde todos los procesos puedan acceder. Para realizar la comuniacación se dejan los datos o la inforamación en alguna de estas posiciones de memoria, donde otros procesos pueden tomar de esa dirección de memoria compartida los datos que necesiten. Lógicamente no pueden operar simultáneamente sobre la memoria compartida, lo que obliga a bloquear y liberar el acceso a memoria.
-* **Comunicación por pasaje de Mensajes:** En este caso la idea es que las unidades de procesamiento estarían en máquinas separadas donde, en principio, no existiría una memoria compaartida entre ellos dos, entonces la comunicación se tendría que hacer enviando mensajes a través de algnuna red de interconexión. Es necesario establecer un canal físico (como un cable) o uno lógico (canal simulado en la memoria del procesador para todos los procesos) para transmitir información entre procesos. Para que la comunicacións sea efectiva los procesos deben "saber" cuándo tienen mensajes para leer y cuando deben transmitir mensajes
+La comunicación entre procesos concurrentes se puede identificar en dos grandes grupos:
 
-**Sincronización** Es la posesión de información acerca de otro proceso para coordinar actividadess. Los procesos se sincronizan para poder avanzar. La sincronización y la comunicación son los dos componentes que forman parte de los programas concurrentes.
-Los procesos se pueden sincronizar de dos maneras diferentes:
-* **Por exclusión mutua:** Permite asegurar que un único proceso a la vez está accedie ndo a utilizar un recurso compartido que puede ser usado por un único proceso a la vez. Por ej: Una variable compartida o algún periférico compartido como una impresora.
-* **Por condición:** Permite bloquear la ejecución de un proceso hasta que se cumpla una condición dada.
+- **Comunicación por Memoria Compartida:** se necesita un lugar de memoria al que todos los procesos puedan acceder. Para comunicarse, los procesos depositan datos en esas posiciones de memoria y otros los leen desde allí. Como no pueden operar simultáneamente sobre la memoria compartida, es obligatorio bloquear y liberar el acceso.
+- **Comunicación por Pasaje de Mensajes:** las unidades de procesamiento se encuentran en máquinas separadas sin memoria compartida, por lo que la comunicación se realiza enviando mensajes a través de una red de interconexión. Es necesario establecer un canal físico (como un cable) o lógico (simulado en memoria) para transmitir información. Para que la comunicación sea efectiva, los procesos deben saber cuándo tienen mensajes para leer y cuándo deben transmitir.
 
-**Interferencia:** Un proceso toma una acción que invalida las suposiciones hechas por otro proceso. Hubo un proceso que un cierto estado (variables compartidas por ejemplo, que forman el estado actual del programa) y cuando va a trabajar teniendo en cuenta ese estado resulta que hay otro proceso que modificó algo de ese estado, lo cual puede generar un error en el proceso que estaba ejecutandose. 
+## Sincronización
 
-**Prioridad:** Cuando decimos que un proceso tiene mayor prioridad que otro en un programa concurrente, eso podría causar que el proceso que tiene menos prioridad, sea sacado de la unidad de procesamiento (se suspenda su ejecución) porque el otro proceso se apropió del procesador o algún recurso compartido.
-**Granularidad:** La graularidad de una aplicación está dada por la relación entre el cómputo y la comunicación. Si tengo un programa que debe hacer poco computo y comunicar de forma iterada en un ciclo, esto es lo que se llama GRANULARIDAD FINA o GRANO FINO (poco código y enseguida tengo que comunicar). Por otra parte, existe la solución de GRANULARIDAD GRUESA o GRANO GRUESO, en el cual yo tengo un trozo de código muy grande y luego la comunicación.
-Si tengo muchas unidades de procesamiento pero estas no son potentes, convendrá tener una solución de grano fino. Una arquitectura de tipo cluster o distribuída conviene que tenga una solución de grano grueso.
+Es la posesión de información acerca de otro proceso para coordinar actividades. Los procesos se sincronizan para poder avanzar. La sincronización y la comunicación son los dos componentes fundamentales de los programas concurrentes.
 
-**Manejo de recursos:** Uno de los temas principales de la programación concurrente es la administración de recursos compartidos:
-* Esto incluye la asignación de recursos compartidos, métodos de acceso a los recursos, bloqueo y liberación de recursos, seguridad y consistencia.
-* Una propiedad deseable en sistemas concurrentes es el equilibrio en el acceso a recursos compartidos por todos los procesos (fairness). Es decir, si todos los procesos tienen que usar un cierto recurso compartido, que todos tengan posibilidades de acceder a él con mas o menos las mismas probabilidades... no debería pasar que un proceso acceda 25 veces a un recurso compartido cuando hay un proceso que todavía no llegó a accederlo.  
-* Dos situaciones NO deseadas en los programas concurrentes son la inanición de un proceso (no logra acceder a los recursos compartidos) y el overloading de un proceso (la carga asignada excede su capacidad de procesamiento)
-* Otro problema importante que se debe evitar es el deadlock. La ausencia de deadlock es una propiedad necesaria en los procesos concurrentes.
-Las 4 propiedades necesarias y suficientes para que exista deadlock son:
-  * **Recursos reusables serialmente:** existirán una serie de recursos compartidos que pueden ser utilizados por un único proceso a la vez y que se deben usar con exclusión mútua. 
-  * **Adquisición incremental:** Los procesos van adquiriendo los recursos compartidos que necesitan de a uno y se los van quedando. No esperan a que todos los recursos compartidos esten libres y los toman todos juntos, sino que cuando ven que hay uno libre de los que necesitan, lo toman hasta tener los que necesitan para llevar a cabo al tarea que deban realizar.
-  * **No apropiación (no-preemption):** Si un proceso tiene un cierto recurso compartido, nadie se lo puede quitar. Nadie lo puede forzar a dejarlo. Él es el único que lo va a liberar voluntariamente una vez que terminó de utilizarlo.
-  * **Espera cíclica:** Existe una cadena circular o ciclo de procesos tal que cada uno tiene un recurso que su sucesor en el ciclo está esperando adquirir. Lo que sucede en este caso es que ninguno de los procesos va a liberar su recurso compartido.
-_Para evitar el deadlock tengo que asegurarme de que al menos una de estas 4 propiedades NO se pueda dar_.
+Los procesos se pueden sincronizar de dos maneras:
 
-**Requerimientos para un lenguaje concurrente:** Independientemente del mecanismo de comunicación o sincronización que requiere un programa, los lenguajes de programación deberán proveer librerías o herramientas adecuadas para la especificación e implementación de las mismas.
+- **Por exclusión mutua:** asegura que un único proceso a la vez acceda a un recurso compartido que solo puede ser usado por uno a la vez (por ejemplo, una variable compartida o una impresora).
+- **Por condición:** bloquea la ejecución de un proceso hasta que se cumpla una condición dada.
 
+## Interferencia
+
+Un proceso toma una acción que invalida las suposiciones hechas por otro proceso. Por ejemplo, un proceso lee el estado actual del programa (variables compartidas) y cuando va a trabajar en base a ese estado, otro proceso ya lo modificó, lo cual puede generar un error.
+
+## Prioridad
+
+Cuando un proceso tiene mayor prioridad que otro, puede apropiarse del procesador o de un recurso compartido, causando que el proceso de menor prioridad sea suspendido.
+
+## Granularidad
+
+La granularidad de una aplicación está dada por la relación entre el cómputo y la comunicación:
+
+- **Grano fino:** poco cómputo seguido de comunicación frecuente. Conviene cuando se tienen muchas unidades de procesamiento poco potentes.
+- **Grano grueso:** grandes bloques de cómputo seguidos de comunicación. Conviene en arquitecturas de tipo cluster o distribuidas.
+
+## Manejo de recursos
+
+Uno de los temas principales de la programación concurrente es la administración de recursos compartidos, lo cual incluye su asignación, métodos de acceso, bloqueo y liberación, seguridad y consistencia.
+
+Una propiedad deseable es el **equilibrio en el acceso** (*fairness*): todos los procesos deben tener posibilidades similares de acceder a los recursos compartidos; no debería ocurrir que un proceso acceda 25 veces mientras otro no accedió ninguna.
+
+Dos situaciones **no deseadas** son:
+- **Inanición:** un proceso no logra acceder a los recursos compartidos.
+- **Overloading:** la carga asignada a un proceso excede su capacidad de procesamiento.
+
+### Deadlock
+
+Otro problema importante a evitar es el **deadlock**. Su ausencia es una propiedad necesaria en los sistemas concurrentes. Las 4 condiciones necesarias y suficientes para que exista son:
+
+1. **Recursos reusables serialmente:** los recursos compartidos solo pueden ser utilizados por un proceso a la vez, con exclusión mutua.
+2. **Adquisición incremental:** los procesos adquieren los recursos de a uno y los retienen; no esperan a que todos estén libres para tomarlos juntos.
+3. **No apropiación (no-preemption):** ningún proceso puede quitarle un recurso a otro; solo el propio proceso lo liberará voluntariamente al terminar de usarlo.
+4. **Espera cíclica:** existe una cadena circular de procesos donde cada uno retiene un recurso que el siguiente en el ciclo necesita, por lo que ninguno puede avanzar.
+
+> Para evitar el deadlock hay que asegurarse de que al menos una de estas 4 condiciones **no pueda darse**.
+
+## Requerimientos para un lenguaje concurrente
+
+Independientemente del mecanismo de comunicación o sincronización requerido, los lenguajes de programación deben proveer librerías o herramientas adecuadas para la especificación e implementación de los mismos.

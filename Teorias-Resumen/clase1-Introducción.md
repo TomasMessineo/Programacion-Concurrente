@@ -9,7 +9,8 @@ Este es un concepto muy importante en el diseño del hardware y para los sistema
 
 En algunos casos se tiende a pensar en sistemas secuenciales en lugar de concurrentes para simplificar el proceso de diseño, pero esto va en contra de la necesidad de sistemas de cómputo cada vez más poderosos y flexibles. Nos va a convenir, en muchos casos, pensar la solución a un problema de manera concurrente (lo cual no será sencillo, ya que hay que cambiar la forma de pensar).
 
-La concurrencia es un concepto de software no restringido a una arquitectura particular de hardware ni a un número determinado de procesadores. Nos ayuda a evaluar, pensar y distribuir un trabajo entre distintas partes que van ejecutándose de forma simultánea y que, de alguna manera, cooperan y compiten por el acceso a recursos.
+La concurrencia es un concepto puramente de software, independiente de cualquier arquitectura de hardware o cantidad de procesadores. La idea es descomponer un problema en partes que puedan ejecutarse simultáneamente, donde esas partes interactúan entre sí cooperando o compitiendo por recursos. Especificarla implica definir los procesos, cómo se comunican y cómo se sincronizan.
+El paralelismo, en cambio, es un concepto más ligado al hardware: ocurre cuando un programa concurrente se ejecuta sobre una arquitectura con más de un procesador, aprovechando eso para reducir el tiempo de ejecución.
 
 ## ¿Dónde está la concurrencia?
 

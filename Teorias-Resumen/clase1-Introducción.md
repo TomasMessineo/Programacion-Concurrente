@@ -112,9 +112,7 @@ Por ahora, se llamará "Proceso" a un programa **secuencial**. Un proceso es un 
 **Los procesos pueden ser independientes entre ellos, cooperar o competir:**
 
 **Independientes** porque cada uno tiene la capacidad de resolver su parte sin interactuar con el resto. Estos procesos son relativamente raros y poco interesantes.
-
 **Cooperar** porque cada uno ejecuta o realiza una parte de la tarea y después de alguna manera todas esas partecitas tienen que integrarse de alguna manera entre ellas para obtener el resultado final. Este caso no es sencillo ya que hay varias decisiones que hay que tomar. Los procesos deben sincronizarse para poder cooperar correctamente.
-
 **Compiten** porque entre ellos "pelean" por utilizar un recurso compartido (por ejemplo, en el sistema de ventas de pasajes de avion, los usuarios "compiten" por acceder a comprar un pasaje). Este tipo de proceso es típico en Sistemas Operativos y Redes, debido a recursos compartidos. Estos problemas no son tan sencillos de resolver, ya que hay varios problemas que se pueden dar: **Deadlock** (donde ninguno de los procesos va a poder continuar trabajando porque está esperando que el otro proceso libere un cierto recurso compartido, que no lo va a poder liberar porque estará esperando que el primer proceso libere otro recurso, el cual tampoco va a ser liberado. Esto es el "Abrazo Mortal" ya que ninguno de los procesos va a poder continuar su ejecución), Inanición (algunos de los procesos nunca logra acceder al recurso compartido ya que hay otro que le gana. Mientras mas procesos compiten por el recurso, más posibilidades de inanición existen)
 
 Hay momentos donde los procesos donde los procesos serán independientes, luego cooperarán y luego competirán (no es que un proceso nace siendo independiente y muere así, sino que puede variar).

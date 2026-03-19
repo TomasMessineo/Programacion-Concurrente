@@ -8,7 +8,7 @@ El **estado** de un programa concurrente es el conjunto de valores que tienen en
 
 Cuando un programa concurrente se ejecuta, cada proceso va ejecutando sus sentencias una a una, y cada sentencia transforma ese estado. Una **acción atómica** es una transformación de estado **indivisible**: ningún otro proceso puede ver los estados intermedios de esa acción, simplemente ve el estado anterior y el estado posterior.
 
-### Historias
+### Historias -> Secuencia de acciones atómicas
 
 La secuencia de estados por los que pasa un programa durante su ejecución se llama **historia**. En un programa concurrente, los procesos van intercalando sus acciones atómicas, y esa intercalación define qué historia se obtiene. No todas las historias posibles son válidas: la sincronización permite restringir cuáles se permiten.
 
@@ -31,12 +31,13 @@ Posibles historias:
 ✗ p21, p11, p12, ....
 ```
 Las historias inválidas son aquellas donde `p2.1` lee el buffer antes de que `p1.2` haya escrito en él. Se debe asegurar un orden temporal entre las acciones → las tareas se intercalan → deben fijarse restricciones.
+A este programa visto en el ejemplo anterior, le falta la sincronización para evitar los casoso historias erróneas o inválidas.
 
 ---
 
 ### ¿Qué es una acción atómica de grano fino?
 
-Las acciones atómicas de **grano fino** son las que implementa directamente el hardware: operaciones muy básicas como leer un valor de memoria o escribirlo. Son indivisibles a nivel de hardware.
+Las acciones atómicas de **grano fino** son las que implementa directamente el hardware: operaciones muy básicas como leer un valor de memoria o escribirlo. Son indivisibles a nivel de hardware. Al llamar a estas acciones atómicas no se va a tener que hacer nada extra ya que la máquina nos las da como atómicas.
 
 Lo importante es entender que operaciones que parecen simples en el código **no son atómicas** a nivel de hardware. Por ejemplo:
 
@@ -95,12 +96,13 @@ oc
 
 ### Características del grano fino
 
-- Los valores de los tipos básicos se almacenan en elementos de memoria leídos y escritos como acciones atómicas.
+- Los valores de los tipos básicos se almacenan en elementos de memoria leídos y escritos como acciones atómicas. 
 - Los valores se cargan en registros, se opera sobre ellos, y luego se almacenan en memoria.
 - Cada proceso tiene su propio conjunto de registros (context switching).
 - Todo resultado intermedio de una expresión compleja se almacena en registros o memoria privada del proceso.
 
 Los tiempos absolutos no importan: no se puede confiar en el tiempo de ejecución de las sentencias ni en la velocidad del procesador para sincronizar procesos, ya que los procesadores cambian y el tiempo de cada etapa varía.
+Si una asignación x = e en un proceso no referencia ninguna variable alterada por otro proces, la ejecución de la asignación será atómica ya que se estaría trabajando con variables locales o variables que no son compartidas.
 
 ---
 
@@ -155,9 +157,9 @@ co x=y+1 // y=x+1 oc
 
 ## Especificación de la sincronización
 
-Cuando una expresión o asignación **no satisface ASV**, es necesario ejecutarla atómicamente para evitar resultados incorrectos. En general, se necesita ejecutar secuencias enteras de sentencias como una única acción atómica: esto es la **sincronización por exclusión mutua**.
+Cuando una expresión o asignación **no satisface ASV**, es necesario ejecutarla atómicamente para evitar resultados incorrectos. En general, se necesita ejecutar secuencias enteras de sentencias como una única acción atómica: esto es la **sincronización por exclusión mutua** -> Es un pedazo de codigo que nos asegura cierto pedazo de código va a ejecutarse por un solo proceso a la vez, y se logra por software.
 
-Para expresar esto, se usan **acciones atómicas de grano grueso** (*coarse grained*): secuencias de acciones de grano fino que, vistas desde afuera, aparecen como indivisibles.
+Para expresar esto, se usan **acciones atómicas de grano grueso** (*coarse grained*): secuencias de acciones de grano fino que, vistas desde afuera, aparecen como indivisibles. Por programación vamos a hacer que un sentencia o conjunto de sentencias de grano fino sean de grano grueso. Nosotros tenemos que implementar para que se resuelva de forma atómica.
 
 ### Sintaxis `<await>`
 ```text
@@ -170,6 +172,7 @@ Para expresar esto, se usan **acciones atómicas de grano grueso** (*coarse grai
 - `S` es una secuencia de sentencias que se garantiza que termina.
 - Se garantiza que `B` es `true` cuando comienza la ejecución de `S`.
 - **Ningún estado interno de `S` es visible para los otros procesos.**
+Si el proceso ve que B es false, entonces sale para darle el espacio a otro proceso, y luego de un rato volverá a evaluar la condición de B para ver si está en true, y así ejecutar S. Dentro de la acción atómica ningún proceso modificará lo que esté dentro de la misma (entre <>).
 
 ### Tipos de `await`
 
@@ -196,14 +199,16 @@ Buffer: cola;
 process Productor {
     while (true)
         Generar Elemento
-        ⟨await (cant < N); push(buffer, elemento); cant++⟩
+        ⟨await (cant < N); push(buffer, elemento); cant++⟩ ---> Se demora hasta que haya lugar en el buffer (cant < N y recién ahí agrego>)
 }
 
 process Consumidor {
     while (true)
-        ⟨await (cant > 0); pop(buffer, elemento); cant--⟩
+        ⟨await (cant > 0); pop(buffer, elemento); cant--⟩ ---> Se demora hasta que haya al menos un elemento en el buffer, para luego hacer el pop.
         Consumir Elemento
 }
+
+El <> es importante porque sino otro proceso podría modificar las variables de cada proceso, haciendo que el programa se llegue a romper, por ejemplo, si se quiere sacar un elemento haciendo pop cambiando cant a 1 cuando en realidad estaba en 0 ya que no había ninguno.
 ```
 
 - El productor espera a que haya lugar (`cant < N`) antes de agregar al buffer.
